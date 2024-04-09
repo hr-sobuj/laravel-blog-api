@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ErrorResource;
+use App\Http\Resources\SuccessResource;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
@@ -14,10 +17,13 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return response()->json([
-            'categories' => Category::all(),
-        ]);
+        $categories = CategoryResource::collection(Category::latest()->get());
+        return (new SuccessResource([
+            'message' => 'All Categories',
+            'data' => $categories,
+        ]))->response()->setStatusCode(200);
     }
+
 
 
     /**
@@ -29,22 +35,14 @@ class CategoryController extends Controller
             'name' => 'required|string|unique:categories'
         ]);
         if ($data->fails()) {
-            return response()->json([
-                'success'   => false,
-                'message' => 'Error',
-                'errors' => $data->errors()->first(),
-            ]);
+            return (new ErrorResource($data->getMessageBag()))->response()->setStatusCode(422);
         }
 
         $formData = $data->validate();
         $formData['slug'] = Str::slug($formData['name']);
-        $category = Category::create($formData);
+        Category::create($formData);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Category created successfully',
-            'data' => $category,
-        ]);
+        return (new SuccessResource(['message' => 'Category successfully stored!']))->response()->setStatusCode(201);
     }
 
     /**
@@ -52,13 +50,9 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Category created successfully',
-            'data' => $category,
-        ]);
+        $formData['data']=new CategoryResource($category);
+        return (new SuccessResource($formData))->response()->setStatusCode(200);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -96,8 +90,8 @@ class CategoryController extends Controller
     {
         $category->delete();
         return response()->json([
-            'success'=> true,
-            'message'=> 'Deleted!',
+            'success' => true,
+            'message' => 'Deleted!',
         ]);
     }
 }
