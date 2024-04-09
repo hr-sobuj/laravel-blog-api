@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Resources\CategoryResource;
-use App\Http\Resources\ErrorResource;
 use App\Http\Resources\SuccessResource;
-use Illuminate\Http\Request;
 use App\Models\Category;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
