@@ -50,20 +50,12 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        $category = Category::find($id);
-        if ($category) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Category created successfully',
-                'data' => $category,
-            ]);
-        }
         return response()->json([
-            'success'   => false,
-            'message' => 'Error',
-            'data' => null,
+            'success' => true,
+            'message' => 'Category created successfully',
+            'data' => $category,
         ]);
     }
 
@@ -71,19 +63,8 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category)
     {
-
-        $category = Category::find($id);
-        if (!$category) {
-            return response()->json([
-                'success'   => false,
-                'message' => 'Error',
-                'data' => null,
-            ]);
-        }
-
-
         $data = Validator::make($request->all(), [
             'name' => 'required|string|unique:categories,name,' . $category->id,
         ]);
@@ -111,8 +92,12 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        return response()->json([
+            'success'=> true,
+            'message'=> 'Deleted!',
+        ]);
     }
 }
