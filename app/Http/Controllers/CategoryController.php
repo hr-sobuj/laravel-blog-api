@@ -25,25 +25,25 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $data=Validator::make($request->all(),[
-            'name'=>'required|string|unique:categories'
+        $data = Validator::make($request->all(), [
+            'name' => 'required|string|unique:categories'
         ]);
-        if($data->fails()){
+        if ($data->fails()) {
             return response()->json([
                 'success'   => false,
-                'message'=> 'Error',
-                'errors'=> $data->errors()->first(),
+                'message' => 'Error',
+                'errors' => $data->errors()->first(),
             ]);
         }
 
-        $formData=$data->validate();
-        $formData['slug']=Str::slug($formData['name']);
-        $category=Category::create($formData);
+        $formData = $data->validate();
+        $formData['slug'] = Str::slug($formData['name']);
+        $category = Category::create($formData);
 
         return response()->json([
-            'success'=> true,
-            'message'=> 'Category created successfully',
-            'data'=>$category,
+            'success' => true,
+            'message' => 'Category created successfully',
+            'data' => $category,
         ]);
     }
 
@@ -52,7 +52,19 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $category = Category::find($id);
+        if ($category) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category created successfully',
+                'data' => $category,
+            ]);
+        }
+        return response()->json([
+            'success'   => false,
+            'message' => 'Error',
+            'data' => null,
+        ]);
     }
 
 
@@ -61,7 +73,39 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'success'   => false,
+                'message' => 'Error',
+                'data' => null,
+            ]);
+        }
+
+
+        $data = Validator::make($request->all(), [
+            'name' => 'required|string|unique:categories,name,' . $category->id,
+        ]);
+
+        if ($data->fails()) {
+            return response()->json([
+                'success'   => false,
+                'message' => 'Error',
+                'errors' => $data->errors()->first(),
+            ]);
+        }
+
+        $formData = $data->validate();
+        $formData['slug'] = Str::slug($formData['name']);
+        $category->update($formData);
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category updated successfully',
+            'data' => $category,
+        ]);
     }
 
     /**
