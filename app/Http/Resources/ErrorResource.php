@@ -18,6 +18,7 @@ class ErrorResource extends JsonResource
         $response=parent::toArray($request);
         $message=array_key_exists("message", $response) ? $response["message"] :"Error";
         $data=array_key_exists("data", $response) ? $response["data"] :[];
+
         return [
             "success"=>false,
             "message"=>$message,
